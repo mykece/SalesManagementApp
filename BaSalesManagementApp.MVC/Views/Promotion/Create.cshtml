@@ -1,0 +1,283 @@
+﻿@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+@model BaSalesManagementApp.MVC.Models.PromotionVMs.PromotionCreateVM
+
+@{
+    ViewData["Title"] = localizer["Create"];
+}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4">
+            <span class="text-muted fw-light">@localizer["Promotion"] /</span> @localizer["Create"]
+        </h4>
+
+        <div class="row">
+            <div class="content-wrapper">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <form id="createPromotionForm" asp-action="Create">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <div class="mb-3">
+                                    <label asp-for="Discount" class="form-label">@localizer["Discount"] (%)</label>
+                                    <input id="Discount" asp-for="Discount" class="form-control" min="1" max="99" />
+                                    <span asp-validation-for="Discount" class="text-danger"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="Price" class="form-label">@localizer["Price"]</label>
+                                    <input id="Price" asp-for="Price" class="form-control" readonly />
+                                    <span asp-validation-for="Price" class="text-danger"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="TotalPrice" class="form-label">@localizer["TotalPrice"]</label>
+                                    <input id="TotalPrice" asp-for="TotalPrice" class="form-control" readonly />
+                                    <span asp-validation-for="TotalPrice" class="text-danger"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="IsActive" class="form-check-label">@localizer["Active"]</label>
+                                    <input asp-for="IsActive" class="form-check-input" />
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="StartDate" class="form-label">@localizer["StartDate"]</label>
+                                    <input asp-for="StartDate" id="StartDate" type="date" class="form-control" value="@Model.StartDate.ToString(DateTime.Now.ToString("yyyy-MM-dd"))" />
+                                    <span asp-validation-for="StartDate" class="text-danger"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="EndDate" class="form-label">@localizer["EndDate"]</label>                
+                                    <input asp-for="EndDate" id="EndDate" type="date" class="form-control" value="@Model.EndDate.ToString(DateTime.Now.ToString("yyyy-MM-dd"))" />
+                                    <span asp-validation-for="EndDate" class="text-danger"></span>
+                                </div>
+
+                                <!-- Şirket Dropdown -->
+                                <div class="mb-3">
+                                    <label asp-for="CompanyId" class="form-label">@localizer["Company"]</label>
+                                    <div class="dropdown">
+                                        <input type="text" id="companySearch" class="form-control dropdown-toggle" placeholder="@localizer["Select_Company"]" aria-expanded="false" readonly>
+                                        <ul class="dropdown-menu" id="CompanyIdDropdown" style="max-height: 200px; overflow-y: auto; display: none;">
+                                            <li>
+                                                <input type="text" id="companySearchFilter" class="form-control" placeholder="" />
+                                            </li>
+                                            @if (Model != null && Model.Companies != null && Model.Companies.Any())
+                                            {
+                                                <li><a class="dropdown-item" href="#" data-value="">@localizer["Select_Company"]</a></li>
+                                                @foreach (var company in Model.Companies)
+                                                {
+                                                    <li><a class="dropdown-item" href="#" data-value="@company.Id">@company.Name</a></li>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <li class="dropdown-item disabled">@localizer["NoCompaniesAvailable"]</li>
+                                            }
+                                        </ul>
+                                    </div>
+                                    <input type="hidden" id="CompanyId" asp-for="CompanyId" />
+                                    <span asp-validation-for="CompanyId" class="text-danger"></span>
+                                </div>
+
+                                <!-- Ürün Dropdown -->
+                                <div class="mb-3">
+                                    <label asp-for="ProductId" class="form-label">@localizer["Product"]</label>
+                                    <div class="dropdown">
+                                        <input type="text" id="productSearch" class="form-control dropdown-toggle" placeholder="@localizer["Select_a_Product"]" aria-expanded="false" readonly>
+                                        <ul class="dropdown-menu" id="ProductIdDropdown" style="max-height: 200px; overflow-y: auto; display: none;">
+                                            <!-- Searchbox for filtering products -->
+                                            <li>
+                                                <input type="text" id="productSearchFilter" class="form-control" placeholder="" />
+                                            </li>
+                                            <!-- Default disabled message -->
+                                            <li class="dropdown-item disabled">@localizer["PleaseChooseCompanyFirst"]</li>
+                                        </ul>
+                                    </div>
+                                    <input type="hidden" id="ProductId" asp-for="ProductId" />
+                                    <span asp-validation-for="ProductId" class="text-danger"></span>
+                                </div>
+
+
+                                <div>
+                                    <input type="submit" value="@localizer["Create"]" class="btn btn-primary" />
+                                    <a asp-action="Index" class="btn btn-secondary">@localizer["BackToList"]</a>
+                                </div>
+                                @for (int i = 0; i < Model.Companies.Count(); i++)
+                                {
+                                    <input type="hidden" name="Companies[@i].Id" value="@Model.Companies.ElementAt(i).Id" />
+                                    <input type="hidden" name="Companies[@i].Name" value="@Model.Companies.ElementAt(i).Name" />
+                                }
+                                @for (int i = 0; i < Model.Products.Count(); i++)
+                                {
+                                    <input type="hidden" name="Products[@i].Id" value="@Model.Products.ElementAt(i).Id" />
+                                    <input type="hidden" name="Products[@i].Name" value="@Model.Products.ElementAt(i).Name" />
+                                }
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .dropdown-menu {
+        width: 100%; /* Arama girişinin genişliğiyle eşleşir */
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .dropdown-item {
+        white-space: normal; /* Eğer ürün isimleri çok uzunsa, satır kaymasını sağlar */
+    }
+
+
+    /* Dropdown genişliğini arama kutusuyla eşleştir */
+    .dropdown-menu {
+        width: 100%; /* Arama girişinin genişliğiyle eşleşir */
+    }
+</style>
+
+
+
+   
+    <script>
+        $(document).ready(function () {
+            var products = []; // Ürün verilerini saklayacak dizi
+
+            // Dropdown menülerinin açılması için
+            $('#companySearch').on('focus', function () {
+                $('#CompanyIdDropdown').show();
+            });
+
+            $('#productSearch').on('focus', function () {
+                if ($('#CompanyId').val() !== "") {
+                    $('#ProductIdDropdown').show();
+                }
+            });
+
+            // Şirket seçildiğinde ürünleri günceller
+            function updateProductsByCompanyId(companyId) {
+                $('#Price').val(''); // Farklı bir şirket seçilmesi durumunda Price alanını temizler
+                $('#TotalPrice').val(''); // Farklı bir şirket seçilmesi durumunda TotalPrice alanını temizler
+                $('#ProductId').val(''); // ProductId inputunu sıfırlar
+                $('#productSearch').val(''); // Product arama kutusunu sıfırlar
+
+                if (companyId) {
+                    $.ajax({
+                        url: '/Promotion/GetProductsByCompanyId',
+                        type: 'GET',
+                        data: { companyId: companyId },
+                        success: function (response) {
+                            products = response; // Ürünleri diziye ata
+
+                            // Searchbox ve ürünleri ekleyelim
+                            var options = '<li><input type="text" id="productSearchFilter" class="form-control" placeholder="" /></li>';
+                            options += '<li><a class="dropdown-item" href="#" data-value="">@localizer["Select_a_Product"]</a></li>';
+
+                            if (response.length > 0) {
+                                $.each(response, function (index, product) {
+                                    options += '<li><a class="dropdown-item" href="#" data-value="' + product.id + '">' + product.name + '</a></li>';
+                                });
+                                $('#ProductIdDropdown').html(options);
+                                $('#productSearch').prop('disabled', false);
+                            } else {
+                                options += '<li class="dropdown-item disabled">@localizer["NoProductsAvailable"]</li>';
+                                $('#ProductIdDropdown').html(options);
+                                $('#productSearch').prop('disabled', true);
+                            }
+                        },
+                        error: function (error) {
+                            console.log(error);
+                        }
+                    });
+                } else {
+                    var options = '<li><input type="text" id="productSearchFilter" class="form-control" placeholder="@localizer["Search_Product"]" /></li>';
+                    options += '<li class="dropdown-item disabled">@localizer["PleaseChooseCompanyFirst"]</li>';
+                    $('#ProductIdDropdown').html(options);
+                    $('#productSearch').prop('disabled', true);
+                }
+            }
+
+            // Dropdown seçeneklerini arama girdisine göre filtreler
+            function filterDropdown(searchInput, dropdown) {
+                var filter = searchInput.val().toLowerCase();
+                dropdown.find('.dropdown-item').each(function () {
+                    var optionText = $(this).text().toLowerCase();
+                    $(this).toggle(optionText.startsWith(filter));
+                });
+            }
+
+            // Şirket seçimi yapıldığında
+            $('#CompanyIdDropdown').on('click', '.dropdown-item', function () {
+                var selectedValue = $(this).data('value');
+                $('#CompanyId').val(selectedValue);
+                $('#companySearch').val($(this).text());
+                $('#CompanyIdDropdown').hide();
+                updateProductsByCompanyId(selectedValue); // Şirket seçimi değiştiğinde ürünleri güncelle
+            });
+
+            // Ürün seçimi yapıldığında
+            $('#ProductIdDropdown').on('click', '.dropdown-item', function () {
+                var selectedValue = $(this).data('value');
+                $('#ProductId').val(selectedValue);
+                $('#productSearch').val($(this).text());
+                $('#ProductIdDropdown').hide();
+
+                // Fiyat güncelleme işlemleri
+                var product = products.find(p => p.id == selectedValue);
+                if (product) {
+                    $('#Price').val(product.price);
+                    var discount = $('#Discount').val();
+                    var totalPrice = product.price - (product.price * (discount / 100));
+                    $('#TotalPrice').val(totalPrice.toFixed(2));
+                }
+            });
+
+            // İndirim değiştiğinde fiyat hesaplaması
+            $('#Discount').on('input', function () {
+                var discount = $(this).val();
+                var productId = $('#ProductId').val();
+                var product = products.find(p => p.id == productId);
+                if (product) {
+                    var totalPrice = product.price - (product.price * (discount / 100));
+                    $('#TotalPrice').val(totalPrice.toFixed(2));
+                }
+            });
+
+            // Şirket araması
+            $('#companySearchFilter').on('input', function () {
+                filterDropdown($(this), $('#CompanyIdDropdown'));
+            });
+
+            // Ürün araması
+            $('#ProductIdDropdown').on('input', '#productSearchFilter', function () {
+                filterDropdown($(this), $('#ProductIdDropdown'));
+            });
+
+            // Dışarı tıklandığında dropdown'u kapat
+            $(document).on('click', function (event) {
+                if (!$(event.target).closest('.dropdown').length) {
+                    $('.dropdown-menu').hide();
+                }
+            });
+
+
+            $('#StartDate').on('change', function () {
+                var startDate = $(this).val(); // Seçilen başlangıç tarihi
+
+                if (startDate) {
+                    // Bitiş tarihinin minimum değerini başlangıç tarihi olarak ayarla
+                    $('#EndDate').attr('min', startDate);
+                } else {
+                    // Eğer başlangıç tarihi boşsa, bitiş tarihinin min değerini temizle
+                    $('#EndDate').removeAttr('min');
+                }
+            });
+
+
+        });
+
+    </script>
+
+

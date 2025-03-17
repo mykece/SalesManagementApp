@@ -1,0 +1,18 @@
+﻿
+using BaSalesManagementApp.Entites.DbSets;
+
+namespace BaSalesManagementApp.Dtos.CompanyDTOs
+{
+    public class CompanyCreateDTO
+    {
+        public string Name { get; set; } = null!;
+        public string Address { get; set; } = null!;
+        public string Phone { get; set; } = null!;
+
+        public string? CountryCode { get; set; } = null!;
+
+    
+        public Guid? CityID { get; set; }
+        //public Guid CountryId { get; set; }
+    }
+}

@@ -1,0 +1,109 @@
+﻿@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+@model OrderUpdateVM
+
+@{
+    ViewData["Title"] = localizer["Update"];
+}
+
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4"><span class="text-muted fw-light">@localizer["Order"] /</span> @localizer["Update"]</h4>
+        <div class="row">
+            <div class="content-wrapper">
+                <div class="col-md-6 col-lg-6">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <form asp-action="Update">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <input type="hidden" asp-for="Id" class="form-control" />
+
+                                <div class="mb-3">
+                                    <label asp-for="ProductId" class="form-label">@localizer["Product"]</label>
+                                    <select asp-for="ProductId" class="form-control" id="productSelect" style="width: 100%;">
+                                        <option value="">@localizer["Select_a_Product"]</option>
+                                        @foreach (var product in Model.Products)
+                                        {
+                                            <option value="@product.Id">@product.Name</option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="ProductId" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Quantity" class="form-label">@localizer["Quantity"]</label>
+                                    <input asp-for="Quantity" class="form-control" />
+                                    <span asp-validation-for="Quantity" class="text-danger"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="DiscountRate" class="form-label">@localizer["Discount"]</label>
+                                    <input asp-for="DiscountRate" class="form-control" />
+                                    <span asp-validation-for="DiscountRate" class="text-danger"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="TotalPrice" class="form-label">@localizer["TotalPrice"]</label>
+                                    <input asp-for="TotalPrice" class="form-control" />
+                                    <span asp-validation-for="TotalPrice" class="text-danger"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="IsActive" class="form-check-label">@localizer["IsActive"]</label>
+                                    <input asp-for="IsActive" class="form-check-input" />
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="OrderDate" class="form-label">@localizer["OrderDate"]</label>
+                                    <input asp-for="OrderDate" class="form-control" type="datetime-local" />
+                                    <span asp-validation-for="OrderDate" class="text-danger"></span>
+                                </div>
+                                <div>
+                                    <input type="submit" value="@localizer["Save"]" class="btn btn-primary" />
+                                    <a asp-action="Index" class="btn btn-secondary">@localizer["BackToList"]</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#productSelect').select2({
+                placeholder: "@localizer["Select_a_Product"]",
+                allowClear: true,
+                width: 'resolve',
+                matcher: function (params, data) {
+                    if ($.trim(params.term) === '') {
+                        return data;
+                    }
+                    if (typeof data.text === 'undefined') {
+                        return null;
+                    }
+                    var searchTerm = params.term.toLowerCase();
+                    var optionText = data.text.toLowerCase();
+                    if (optionText.indexOf(searchTerm) === 0) {
+                        return data;
+                    }
+                    return null;
+                },
+                sorter: function (data) {
+                    return data.sort(function (a, b) {
+                        return a.text.localeCompare(b.text);
+                    });
+                }
+            });
+
+            // Clear button functionality
+            $('#clearProduct').on('click', function () {
+                $('#productSelect').val(null).trigger('change');
+            });
+        });
+    </script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
